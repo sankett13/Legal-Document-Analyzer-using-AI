@@ -1,33 +1,27 @@
-# Django core
+
 Django==5.1.6
 djangorestframework==3.15.2
 django-filter==24.3
 
-# Google Gemini AI SDK
 google-generativeai==0.8.5
-
-# File handling and storage
 python-dateutil==2.9.0.post0
 
-# PDF handling
+
 PyMuPDF==1.25.2
 
-# Text-to-Speech
+
 gTTS==2.5.4
 
-# Speech Recognition
+
 SpeechRecognition==3.10.0
 pydub==0.25.1
 
-# Translation
+
 deep-translator==1.11.4
 
-# Image handling
 pillow==11.1.0
 
-# Other utils
 requests==2.32.3
 numpy==2.2.2
 
-# Django media file support
 sqlparse==0.5.3
