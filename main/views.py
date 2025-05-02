@@ -19,8 +19,8 @@ import base64
 
 
 ################################################ functions ################################################
-
-genai.configure(api_key="AIzaSyD-sv9yYUXJRCu67orLtmKS4o7NwVUjOKs")
+#AIzaSyBC8yV7_4RO3paTUgLPQf6WLYIZ7lnqzgw
+genai.configure(api_key="AIzaSyBu2ilS5D1MG84uTVZCKNCzntqjk3Pym0w")
 gemini_pro_vision = genai.GenerativeModel("gemini-1.5-flash")
 gemini_flash = genai.GenerativeModel("gemini-2.0-flash")
 
@@ -171,6 +171,7 @@ def analyze(request):
         translated_text, translation_time = translate_text(extracted_text, language)
         summary_text, summary_time = generate_summary(extracted_text)
         translated_summary, _ = translate_text(summary_text, language) # No need to time the second translation
+        os.remove(pdf_path)
 
         return render(request, 'analyze.html', {
             'extracted_text': extracted_text,
@@ -203,7 +204,7 @@ def ask_prompt(request):
         elif ptype == "Sections":
             prompt_text = "List out all the relevant sections and laws. Provide it in a plain text with breaks and paragraph spacings. If none, return 'None'."
         elif ptype == "Errors":
-            prompt_text = "Check for grammatical errors and provide it in a plain text with breaks and paragraph spacings. If none, return 'None'."
+            prompt_text = "Check for grammatical errors in the text and suggest corrections. If none, return 'None'."
         elif ptype == "Mannual":
             prompt_text = data.get('text')
 
