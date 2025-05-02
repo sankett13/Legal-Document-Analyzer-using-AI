@@ -17,9 +17,10 @@ import fitz
 from deep_translator import GoogleTranslator, exceptions
 import base64
 
+
 ################################################ functions ################################################
 
-genai.configure(api_key="AIzaSyBu2ilS5D1MG84uTVZCKNCzntqjk3Pym0w")
+genai.configure(api_key="AIzaSyD-sv9yYUXJRCu67orLtmKS4o7NwVUjOKs")
 gemini_pro_vision = genai.GenerativeModel("gemini-1.5-flash")
 gemini_flash = genai.GenerativeModel("gemini-2.0-flash")
 
@@ -50,7 +51,10 @@ def extract_text_from_pdf_page(page_data):
             response = gemini_pro_vision.generate_content([
                 "Extract text from this PDF page and ignore any QR codes or pictures. Display it neatly.",
                 page_data["image"],
-            ])
+            ],stream=True)
+            for chunk in response:
+                if chunk.text:
+                    yield f"data: {chunk.text}\n\n"
             return response.text if response.text else ""
         return ""
     except Exception as e:
@@ -129,14 +133,14 @@ def summarize_chunk(chunk):
     response = gemini_flash.generate_content([prompt, chunk])
     return response.text
 
-def generate_summary(text, max_chars=3000):
+def generate_summary(text, max_chars=1500):
     start_time = time.time()
     chunks = [text[i:i+max_chars] for i in range(0, len(text), max_chars)]
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         summaries = list(executor.map(summarize_chunk, chunks))
 
-    # Combine all chunk summaries into a single text
+    # Combine all chunk summaries into a single textS
     combined_summary_text = " ".join(summaries)
 
     # Generate a final concise summary of the combined text
@@ -236,3 +240,17 @@ def audio_to_text(request):
         except Exception as e:
             return JsonResponse({'error': f'An error occurred: {str(e)}'})
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def trial(request):
+    if request.method == 'POST' and request.FILES.get('pdf_file'):
+       pdf_file = request.FILES['pdf_file']
+       language = request.POST['language']
+       upload_folder = os.path.join(settings.MEDIA_ROOT, 'uploads')
+       os.makedirs(upload_folder, exist_ok=True)
+       fs = FileSystemStorage(location=upload_folder)
+       filename = fs.save(pdf_file.name, pdf_file)
+       pdf_path = os.path.join("media", "uploads", filename)
+       extracted_text, extraction_time = extract_text_from_pdf_concurrent(pdf_path)
+
+    
+    
